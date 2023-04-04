@@ -6,7 +6,7 @@ PRJ_LST=$(PRJ).lst
 #Device
 MCU=atmega328p
 #Port
-PORT=/dev/ttyACM0
+PORT=COM4
 
 
 #Compiler

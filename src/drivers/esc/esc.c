@@ -10,50 +10,61 @@
 
 
 
-void esc_init(void) {
-	init_drivers_pins();
-	init_timers();
+
+void ESC_init(void) {
+
+//	for(uint8_t i = 0; i < 3; i++) {
+//		GPIO_pin_config(esc_cfg->phase[i].pin_sd, GPIO_DIR_OUT, GPIO_STATE_LOW);
+//		GPIO_pin_config(esc_cfg->phase[i].pin_in, GPIO_DIR_OUT, GPIO_STATE_LOW);
+//	}
+
+	GPIO_pin_config(phase0_pwm_pin, GPIO_DIR_OUT, GPIO_STATE_LOW);
+	GPIO_pin_config(phase1_pwm_pin, GPIO_DIR_OUT, GPIO_STATE_LOW);
+	GPIO_pin_config(phase2_pwm_pin, GPIO_DIR_OUT, GPIO_STATE_LOW);
+
+	GPIO_pin_config(phase0_in_pin, GPIO_DIR_OUT, GPIO_STATE_LOW);
+	GPIO_pin_config(phase1_in_pin, GPIO_DIR_OUT, GPIO_STATE_LOW);
+	GPIO_pin_config(phase2_in_pin, GPIO_DIR_OUT, GPIO_STATE_LOW);
+
+	TIMER_t02_set_WGM (TIMER0, T02_WGM_PWM_PC_FF); /* Phase correct PWM with counting to 0xFF */
+	TIMER_t02_set_CS  (TIMER0, CS_CLK_FULL);       /* Use internal clock with full speed */
+	TIMER_t02_set_COMA(TIMER0, COM_CLEAR_ON_OCR);  /* Clear OC0A on Compare Match when up-counting. Set OC0A on Compare Match when down-counting.*/
+	TIMER_t02_set_COMB(TIMER0, COM_CLEAR_ON_OCR);  /* Clear OC0B on Compare Match when up-counting. Set OC0B on Compare Match when down-counting.*/
+	TIMER_t02_set_OCRA(TIMER0, 0);                 /* Set PWM to 0 - off */
+	TIMER_t02_set_OCRB(TIMER0, 0);                 /* Set PWM to 0 - off */
+
+	TIMER_t02_set_WGM (TIMER2, T02_WGM_PWM_PC_FF); /* Phase correct PWM with counting to 0xFF */
+	TIMER_t02_set_CS  (TIMER2, CS_CLK_FULL);       /* Use internal clock with full speed */
+	//TIMER_t02_set_COMA(TIMER2, COM_CLEAR_ON_OCR); /* Clear OC2A on Compare Match when up-counting. Set OC2A on Compare Match when down-counting.*/
+	TIMER_t02_set_COMB(TIMER2, COM_CLEAR_ON_OCR);  /* Clear OC2B on Compare Match when up-counting. Set OC2B on Compare Match when down-counting.*/
+	//TIMER_t02_set_OCRA(TIMER2, 0);                /* Set PWM to 0 - off */
+	TIMER_t02_set_OCRB(TIMER2, 0);                 /* Set PWM to 0 - off */
 }
 
 
-void init_drivers_pins(void) {
-	pin_t b0 = PIN_B0;
-	pin_set_high(b0);
-	pin_set_high(PIN_B2);
-//	pin_set_high(PIN_C1);
-//	pin_set_high(PIN_B3);
+void esc_step_0(void) {
+	//esc_phase_2_sd_low();
+	//esc_phase_2_in_low();
 
-//	/* Na początku wyłączam wszystkie drivery, żeby nie zrobić zwarcia na mostku */
-//	/* Ustaw kierunek pinów na OUT */
-//	ESC_DDR_SD |=   _BV(ESC_PIN_PHASE_A_SD)
-//	           | _BV(ESC_PIN_PHASE_B_SD)
-//               | _BV(ESC_PIN_PHASE_C_SD);
-//
-//	/* Ustaw stan niski = zwarcie do GND */
-//	/* W tym momencie drivery powinny być wyłączone */
-//	ESC_PORT_SD &= ~(_BV(ESC_PIN_PHASE_A_SD)
-//			       | _BV(ESC_PIN_PHASE_B_SD)
-//			       | _BV(ESC_PIN_PHASE_C_SD));
-//
-//	/* Podobnie konfiguruje piny odpowiedzialne za sterowanie High/Low side */
-//
-//	ESC_DDR_IN |=   _BV(ESC_PIN_PHASE_A_IN)
-//		           | _BV(ESC_PIN_PHASE_B_IN)
-//	               | _BV(ESC_PIN_PHASE_C_IN);
-//
-//		/* Ustaw stan niski = zwarcie do GND */
-//		/* W tym momencie drivery powinny być wyłączone */
-//		ESC_PORT_IN &= ~(_BV(ESC_PIN_PHASE_A_IN)
-//				       | _BV(ESC_PIN_PHASE_B_IN)
-//				       | _BV(ESC_PIN_PHASE_C_IN));
+	esc_phase_0_in_high();
+	esc_phase_1_in_low();
+	esc_phase_0_sd_high();
+	esc_phase_1_sd_high();
 }
 
-
-void init_timers(void) {
-	/* Potrzebujemy 3 sygnały PWM, użyjemy do tego kanały A i B timera 1 i kanał A timera 2 */
-	/* Timer 1 */
-
-
-
+void ESC_set_power(uint8_t duty) {
+	TIMER_t02_set_OCRA(TIMER0, duty);
+	TIMER_t02_set_OCRB(TIMER0, duty);
+	TIMER_t02_set_OCRB(TIMER2, duty);
+}
+void ESC_set_dir(uint8_t dir) {
+	/* ToDo: implement rotation direction switch */
 }
 
+extern void ESC_stop(void) {
+	/* ToDo: implement disabling the ESC functionality:
+	 * 1. switch off interrupts from comparators.
+	 * 2. set pins in safe state.
+	 * 3. disable timers (PWMs).
+	 */
+}

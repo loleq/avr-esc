@@ -5,11 +5,15 @@
  *      Author: bpierzy
  */
 
+#include "esc.h"
 
+void init(void) {
+	ESC_init();
+}
 
-void main(void) {
+int main(void) {
 
+	init();
 
-
-	return;
+	return 0;
 }
