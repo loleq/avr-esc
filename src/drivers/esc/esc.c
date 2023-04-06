@@ -43,13 +43,39 @@ void ESC_init(void) {
 
 
 void esc_step_0(void) {
-	//esc_phase_2_sd_low();
-	//esc_phase_2_in_low();
+	esc_phase_2_inactive();
+	esc_phase_1_active_low();
+	esc_phase_0_active_high();
+}
 
-	esc_phase_0_in_high();
-	esc_phase_1_in_low();
-	esc_phase_0_sd_high();
-	esc_phase_1_sd_high();
+void esc_step_1(void) {
+	esc_phase_1_inactive();
+	esc_phase_2_active_low();
+	esc_phase_0_active_high();
+}
+
+void esc_step_2(void) {
+	esc_phase_0_inactive();
+	esc_phase_2_active_low();
+	esc_phase_1_active_high();
+}
+
+void esc_step_3(void) {
+	esc_phase_2_inactive();
+	esc_phase_0_active_low();
+	esc_phase_1_active_high();
+}
+
+void esc_step_4(void) {
+	esc_phase_1_inactive();
+	esc_phase_0_active_low();
+	esc_phase_2_active_high();
+}
+
+void esc_step_5(void) {
+	esc_phase_0_inactive();
+	esc_phase_1_active_low();
+	esc_phase_2_active_high();
 }
 
 void ESC_set_power(uint8_t duty) {
@@ -57,6 +83,7 @@ void ESC_set_power(uint8_t duty) {
 	TIMER_t02_set_OCRB(TIMER0, duty);
 	TIMER_t02_set_OCRB(TIMER2, duty);
 }
+
 void ESC_set_dir(uint8_t dir) {
 	/* ToDo: implement rotation direction switch */
 }
@@ -68,3 +95,5 @@ extern void ESC_stop(void) {
 	 * 3. disable timers (PWMs).
 	 */
 }
+
+

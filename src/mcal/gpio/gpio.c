@@ -41,3 +41,12 @@ void GPIO_pin_config(pin_t pin, uint8_t dir, uint8_t state) {
 	reg++; /* switch to reg_PORT */
 	reg8_set_bit(reg, pin.map.pin, state);
 }
+
+uint8_t GPIO_pin_read(pin_t pin) {
+	p_reg8_t reg = (p_reg8_t) &gpio->port[pin.map.port].reg_PORT;
+	return reg8_get_bit(reg, pin.map.pin);
+}
+
+uint8_t GPIO_port_read(uint8_t group) {
+	return (uint8_t) gpio->port[group].reg_PORT.byte;
+}

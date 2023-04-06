@@ -9,6 +9,10 @@
 #define _COMMON_H_
 
 #include "stdint.h"
+#define NULL ((void*)0)
+#define false (0 == 1)
+#define true (!false)
+typedef uint8_t bool_t;
 
 typedef volatile uint8_t reg8_t;
 typedef reg8_t * p_reg8_t;
@@ -52,6 +56,10 @@ inline void reg8_set_bits(volatile uint8_t * addr, uint8_t mask, uint8_t val) {
 	*addr = (*addr & (~mask)) | val;
 }
 
+inline uint8_t reg8_get_bits(volatile uint8_t * addr, uint8_t mask) {
+	return (*addr & (~mask));
+}
+
 inline void reg8_set_bit(volatile uint8_t * addr, uint8_t bit, uint8_t val) {
 	reg8_set_bits(addr, (1 << bit), (val << bit));
 }
@@ -62,6 +70,10 @@ inline void reg8_set_bit_high(volatile uint8_t * addr, uint8_t bit) {
 
 inline void reg8_set_bit_low(volatile uint8_t * addr, uint8_t bit) {
 	reg8_set_bit(addr, bit, BIT_LOW);
+}
+
+inline uint8_t reg8_get_bit(volatile uint8_t * addr, uint8_t bit) {
+	return reg8_get_bits(addr, (1 << bit));
 }
 
 #endif /* _COMMON_H_ */

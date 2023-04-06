@@ -13,9 +13,14 @@ PORT=COM4
 CC=avr-gcc
 OBJ_DUMP = avr-objdump
 SYMBOLS=-D F_CPU=16000000UL
-CFLAGS=-O1 -mmcu=$(MCU) $(INCLUDE_DIRS:%=-I "%") $(SYMBOLS) -Wall -Wextra -Wundef -pedantic \
+#CFLAGS=-O1 -mmcu=$(MCU) $(INCLUDE_DIRS:%=-I "%") $(SYMBOLS) -Wall -Wextra -Wundef -pedantic \
+#	-funsigned-char -funsigned-bitfields -ffunction-sections -fdata-sections \
+#	-fpack-struct -fshort-enums
+	
+CFLAGS=-O1 -mmcu=$(MCU) $(INCLUDE_DIRS:%=-I "%") $(SYMBOLS) -Wall -Wextra -Wundef \
 	-funsigned-char -funsigned-bitfields -ffunction-sections -fdata-sections \
 	-fpack-struct -fshort-enums
+	
 LFLAGS=-mmcu=$(MCU)
 
 #Hex generator

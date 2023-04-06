@@ -182,5 +182,7 @@ extern void GPIO_pin_set_high(pin_t pin);
 extern void GPIO_pin_set_low(pin_t pin);
 extern void GPIO_pin_toggle(pin_t pin);
 extern void GPIO_pin_config(pin_t pin, uint8_t dir, uint8_t state);
+extern uint8_t GPIO_pin_read(pin_t pin);
+extern uint8_t GPIO_port_read(uint8_t group);
 
 #endif /* _GPIO_H_ */
