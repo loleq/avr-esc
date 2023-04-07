@@ -68,11 +68,11 @@ extern void ESC_stop(void);
 
 //#define esc_phase_2_enabled()      TIMER_t02_set_COMA(TIMER0, COM_CLEAR_ON_OCR)
 #define esc_phase_2_inactive()     do { \
-		TIMER_t02_set_COMA(TIMER0, COM_NORMAL); \
+	TIMER_t02_set_COMA(TIMER0, COM_NORMAL); \
 	GPIO_pin_set_low(phase1_pwm_pin); \
 } while(0)
 #define esc_phase_2_active_low()   do { \
-		TIMER_t02_set_COMA(TIMER0, COM_NORMAL); \
+	TIMER_t02_set_COMA(TIMER0, COM_NORMAL); \
 	GPIO_pin_set_high(phase1_pwm_pin); \
 	GPIO_pin_set_low(phase1_in_pin); \
 } while(0)
@@ -94,7 +94,15 @@ extern void ESC_stop(void);
 //#define esc_phase_2_active_high()  GPIO_pin_set_high(phase2_in_pin)
 //#define esc_phase_2_pwm(val)       TIMER_t02_set_OCRA(TIMER0, val)
 
-
+typedef enum esc_state {
+	INIT = 0,
+	START,
+	COLD_START,
+	WORK,
+	STOP,
+	INVALID,
+	_STATE_CNT,
+} esc_state_t;
 
 
 #endif /* _ESC_H_ */

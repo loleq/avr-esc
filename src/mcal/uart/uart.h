@@ -75,6 +75,7 @@ typedef struct uart_registers {
 
 #define USART_BAUDRATE 9600
 //#define USART_BAUDRATE 115200UL
+//#define USART_BAUDRATE 250000UL
 #define BAUD_PRESCALE (((F_CPU / (USART_BAUDRATE * 16UL))) - 1)
 
 #define UMSEL_ASYNC 0x00
@@ -95,10 +96,10 @@ typedef struct uart_registers {
 #define UCSZ_9 0x7
 
 extern void UART_init(void);
-extern void UART_send(char * data);
+extern uint8_t UART_send(char const * const data, const uint8_t len, const bool_t block);
 extern uint8_t UART_busy(void);
 extern uint8_t UART_receive(char * buf, uint8_t size);
-extern int UART_putchar(char c, FILE * stream);
+extern uint8_t UART_putchar(char c);
 
 
 #endif /* _UART_H_ */

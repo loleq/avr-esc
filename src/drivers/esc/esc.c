@@ -8,7 +8,25 @@
 #include "common.h"
 #include "esc.h"
 
+#define MIN_PAUSE_TIME_100US (10UL*1000UL*5UL)
 
+typedef void (*esc_step_t)(void);
+esc_step_t steps = {
+	esc_step_0,
+	esc_step_1,
+	esc_step_2,
+	esc_step_3,
+	esc_step_4,
+	esc_step_5,
+};
+
+uint8_t current_step = 0;
+uint8_t stop_time_100us = 0;
+
+
+static esc_state_t last_state = INVALID;
+static esc_state_t current_state = INVALID;
+static esc_state_t requested_state = INVALID;
 
 
 void ESC_init(void) {
@@ -39,6 +57,8 @@ void ESC_init(void) {
 	TIMER_t02_set_COMB(TIMER2, COM_CLEAR_ON_OCR);  /* Clear OC2B on Compare Match when up-counting. Set OC2B on Compare Match when down-counting.*/
 	//TIMER_t02_set_OCRA(TIMER2, 0);                /* Set PWM to 0 - off */
 	TIMER_t02_set_OCRB(TIMER2, 0);                 /* Set PWM to 0 - off */
+
+	requested_state = STOP;
 }
 
 
@@ -84,16 +104,77 @@ void ESC_set_power(uint8_t duty) {
 	TIMER_t02_set_OCRB(TIMER2, duty);
 }
 
-void ESC_set_dir(uint8_t dir) {
+void ESC_cmd_set_dir(uint8_t dir) {
 	/* ToDo: implement rotation direction switch */
 }
 
-extern void ESC_stop(void) {
+void ESC_cmd_stop(void) {
 	/* ToDo: implement disabling the ESC functionality:
 	 * 1. switch off interrupts from comparators.
 	 * 2. set pins in safe state.
 	 * 3. disable timers (PWMs).
 	 */
+	current_state = STOP;
+}
+
+uint32_t delta_stop(void) {
+	return sys_time_100us - stop_time_100us;
+}
+
+uint8_t ESC_change_request(esc_state_t new) {
+	switch (new) {
+	case INIT:
+		if (current_state == STOP || current_state == INVALID) {
+			current_state = INIT;
+		}
+		break;
+	case START:
+		if (current_state == STOP) {
+			current_state = START;
+		}
+		break;
+	case COLD_START:
+		if ((current_state == START) && (delta_stop() >= MIN_PAUSE_TIME_100US)) {
+			current_state = COLD_START;
+		}
+	case WORK:
+		if ((current_state == COLD_START) && (delta_stop() >= MIN_PAUSE_TIME_100US)) {
+			current_state = WORK;
+		}
+		break;
+	case STOP:
+		if (last_state != INVALID) {
+			current_state = STOP;
+		}
+		break;
+	case INVALID:
+		/* fallthrough */
+	default:
+		break;
+	}
+}
+
+void ESC_main(void) {
+	switch (current_state) {
+	case INIT:
+		ESC_init();
+	case START:
+		break;
+	case COLD_START:
+		break;
+	case WORK:
+		break;
+	case STOP:
+		if (last_state != STOP) {
+			stop_time_100us = sys_time_100us;
+		}
+		break;
+	case INVALID:
+		/* fallthrough */
+	default:
+		break;
+	}
+
 }
 
 

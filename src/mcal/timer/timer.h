@@ -10,6 +10,8 @@
 
 #include "common.h"
 
+extern volatile uint32_t sys_time_100us;
+
 #define TIMER0_REGS_START_ADDR (0x44)
 #define TIMER1_REGS_START_ADDR (0x80)
 #define TIMER2_REGS_START_ADDR (0xB0)
@@ -269,5 +271,8 @@ extern void TIMER_t02_set_COMB(uint8_t timer, uint8_t comb);
 extern void TIMER_t02_set_OCRA(uint8_t timer, uint8_t ocra);
 extern void TIMER_t02_set_OCRB(uint8_t timer, uint8_t ocrb);
 extern void TIMER_t02_set_TCN(uint8_t timer, uint8_t tcnt);
+
+#define DELEY_US(us) (F_CPU/1000000*us)
+extern void TIMER_t1_init(void);
 
 #endif /* _TIMER_H_ */

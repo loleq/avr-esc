@@ -6,10 +6,12 @@
  */
 
 #include "timer.h"
-
+#include "interrupt.h"
+#include <avr/interrupt.h>
 timer_t02_registers_t * timer0 = (timer_t02_registers_t *) TIMER0_REGS_START_ADDR;
 timer_t02_registers_t * timer2 = (timer_t02_registers_t *) TIMER2_REGS_START_ADDR;
 timer_t1_registers_t  * timer1 = (timer_t1_registers_t *)  TIMER1_REGS_START_ADDR;
+volatile uint32_t sys_time_100us = 0;
 
 
 void TIMER_t02_set_WGM(uint8_t timer, uint8_t wgm) {
@@ -58,3 +60,16 @@ void TIMER_t02_set_TCN(uint8_t timer, uint8_t tcnt) {
 	t->reg_TCNT.byte = tcnt;
 }
 
+
+void TIMER_t1_init(void) {
+	/* Sys timer. Count 100us */
+	timer1->reg_TCCRB.grouped.g_CS = CS_CLK_FULL;
+	timer1->reg_TCCRB.grouped.g_WGM_b23 = 0x01; /* 4. CTC mode; TOP=OCR1A */
+	timer1->reg_OCRA.word = DELEY_US(100);
+	extern int_registers_t * interrupts;
+	interrupts->reg_TIMSK1.grouped.g_OCIE1A = 1;
+}
+
+ISR(TIMER1_COMPA_vect) {
+	sys_time_100us += 100;
+}

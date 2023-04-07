@@ -58,7 +58,7 @@ $(PRJ_ELF): $(SRCOBJS)
 	$(SIZE) $@
 
 
-$(SRCOBJS): $(BUILD)/%.o: $(SRC)/%.c
+$(SRCOBJS): $(BUILD)/%.o: $(SRC)/%.c $(INCLUDES)
 	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
