@@ -32,6 +32,10 @@ extern void ESC_stop(void);
 #define phase1_in_pin  GPIO_PIN_D4
 #define phase2_in_pin  GPIO_PIN_D7
 
+#define phase0_zerocross_pin  PCINT0
+#define phase1_zerocross_pin  PCINT1
+#define phase2_zerocross_pin  PCINT2
+
 
 
 //#define esc_phase_0_enabled()      TIMER_t02_set_COMB(TIMER2, COM_CLEAR_ON_OCR)
@@ -100,6 +104,7 @@ typedef enum esc_state {
 	COLD_START,
 	WORK,
 	STOP,
+	STALL,
 	INVALID,
 	_STATE_CNT,
 } esc_state_t;
