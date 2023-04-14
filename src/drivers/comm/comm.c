@@ -16,21 +16,37 @@ void clr_buffer(void) {
 	fill = 0;
 }
 
-const char newline[2] = {'\r', '\n'};
-const char space[1] = {' '};
-void parse_cmd(void) {
-//	char tmp[3];
-//	uint8_t len = snprintf(tmp, 3, "%d", fill);
-//	(void)UART_send(receive_buffer, fill, true);
-//	(void)UART_send(space, 1, true);
-//	(void)UART_send(tmp, len, true);
-//	(void)UART_send(newline, 2, true);
+#include <stdlib.h>
+uint8_t parse_power() {
+	uint8_t ret = 0;
+	char * p = &rx_buffer[1];
+	char d = *p;
+	while ((d >= '0') && (d <= '9')) {
+		ret = 10 * ret + d - '0';
+		d = *(++p);
+	}
+	return ret;
+}
 
+void parse_cmd(void) {
 	switch(rx_buffer[0]) {
 		case 't': /* star[t] */
+			ESC_change_request(START);
+			break;
 		case 'p': /* sto[p] */
-		case 'm': /* pw[m] */
+			ESC_change_request(STOP);
+			break;
+		case 'm': { /* pw[m] */
+			uint8_t power = parse_power();
+			ESC_set_power(power);
+		}
+			break;
 		case 'r': /* di[r] */
+			break;
+#ifdef STEP_MODE
+		case 'c': /* commute */
+			ESC_commute = true;
+#endif
 		default:
 			break;
 	}

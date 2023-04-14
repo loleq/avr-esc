@@ -8,12 +8,15 @@
 #include "esc.h"
 #include "uart.h"
 #include "comm.h"
+#include "timer.h"
+#include "interrupt.h"
 #include <stdio.h>
 #include <avr/interrupt.h>
 
 void init(void) {
 	TIMER_t1_init();
 	UART_init();
+	INTERRUPT_init();
 	COMM_init();
 	ESC_init();
 
@@ -25,14 +28,13 @@ int main(void) {
 	init();
 	sei(); /* Enable interrupts */
 	while (1) {
-		GPIO_pin_set_high(GPIO_PIN_C0);
-		tick = sys_time_100us;
+		//tick = sys_time_100us;
 
 		COMM_main();
 		ESC_main();
 
-		GPIO_pin_set_low(GPIO_PIN_C0);
-		while(tick == sys_time_100us) {};
+		GPIO_pin_toggle(GPIO_PIN_C0);
+		//while(tick == sys_time_100us) {};
 	}
 	return 0;
 }

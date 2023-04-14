@@ -272,7 +272,7 @@ extern void TIMER_t02_set_OCRA(uint8_t timer, uint8_t ocra);
 extern void TIMER_t02_set_OCRB(uint8_t timer, uint8_t ocrb);
 extern void TIMER_t02_set_TCN(uint8_t timer, uint8_t tcnt);
 
-#define DELEY_US(us) (F_CPU/1000000*us)
+#define DELEY_US(us) ((F_CPU/1000000)*us)
 extern void TIMER_t1_init(void);
 
 #endif /* _TIMER_H_ */

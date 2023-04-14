@@ -71,5 +71,5 @@ void TIMER_t1_init(void) {
 }
 
 ISR(TIMER1_COMPA_vect) {
-	sys_time_100us += 100;
+	sys_time_100us += 1;
 }

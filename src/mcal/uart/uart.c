@@ -5,6 +5,7 @@
  *      Author: pierba1
  */
 #include "uart.h"
+#include "timer.h"
 #include <avr/interrupt.h>
 #include <util/atomic.h>
 
@@ -89,6 +90,26 @@ uint8_t UART_send(char const * const data, const uint8_t len, const bool_t block
 		}
 	}
 	return sent;
+}
+
+uint8_t _UART_send_P(const char * const pm_addr, const bool_t block) {
+	uint16_t addr = (uint16_t)pm_addr;
+	uint8_t ch;
+	do {
+		asm("lpm %0, Z"	: "=r" (ch) : "z" (addr));
+		if(ch) {
+			while(!UART_putchar(ch)) {
+				if (!block) {
+					return 0;
+				}
+			}
+		} else {
+			break;
+		}
+		addr++;
+	} while (1);
+
+	return (uint8_t)(addr - (uint16_t)pm_addr);
 }
 
 uint8_t UART_putchar(char c) {

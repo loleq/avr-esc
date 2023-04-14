@@ -100,6 +100,12 @@ extern uint8_t UART_send(char const * const data, const uint8_t len, const bool_
 extern uint8_t UART_busy(void);
 extern uint8_t UART_receive(char * buf, uint8_t size);
 extern uint8_t UART_putchar(char c);
+extern uint8_t _UART_send_P(const char * const pm_addr, const bool_t block);
+
+#define UART_send_P(msg_p) do { \
+	extern const char msg_p[] __attribute__((__progmem__)); \
+	_UART_send_P(msg_p, true); \
+} while(0)
 
 
 #endif /* _UART_H_ */

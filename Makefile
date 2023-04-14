@@ -12,12 +12,15 @@ PORT=COM4
 #Compiler
 CC=avr-gcc
 OBJ_DUMP = avr-objdump
-SYMBOLS=-D F_CPU=16000000UL
+SYMBOLS = F_CPU=16000000UL 
+#SYMBOLS += DEBUG=ON
+#SYMBOLS += STEP_MODE
+
 #CFLAGS=-O1 -mmcu=$(MCU) $(INCLUDE_DIRS:%=-I "%") $(SYMBOLS) -Wall -Wextra -Wundef -pedantic \
 #	-funsigned-char -funsigned-bitfields -ffunction-sections -fdata-sections \
 #	-fpack-struct -fshort-enums
 	
-CFLAGS=-O1 -mmcu=$(MCU) $(INCLUDE_DIRS:%=-I "%") $(SYMBOLS) -Wall -Wextra -Wundef \
+CFLAGS=-O1 -mmcu=$(MCU) $(INCLUDE_DIRS:%=-I "%") $(SYMBOLS:%=-D %) -Wall -Wextra -Wundef \
 	-funsigned-char -funsigned-bitfields -ffunction-sections -fdata-sections \
 	-fpack-struct -fshort-enums
 	
@@ -47,6 +50,10 @@ SRCOBJS=$(patsubst $(SRC)/%,$(BUILD)/%,$(SOURCES:.c=.o))
 INCLUDES=$(shell find $(SRC) -name *.h)
 INCLUDE_DIRS = $(sort $(dir $(INCLUDES)))
 
+PUTTY_PORT=$(PORT)
+PUTTY_BAUD=9600
+PUTTY_ARGS=-serial $(PUTTY_PORT) -sercfg $(PUTTY_BAUD),n,1,N
+
 #Make all tests AND all sources for demonstration and compile testing
 all: $(PRJ_HEX) $(SRCOBJS)
 
@@ -56,6 +63,7 @@ $(PRJ_HEX): $(PRJ).elf
 $(PRJ_ELF): $(SRCOBJS)
 	$(CC) $(LFLAGS) -o $@ $^
 	$(SIZE) $@
+
 
 
 $(SRCOBJS): $(BUILD)/%.o: $(SRC)/%.c $(INCLUDES)
@@ -70,7 +78,7 @@ memmap: $(PRJ_ELF)
 	$(OBJ_DUMP) -x $(PRJ_ELF) > $(PRJ_LST)
 
 #Cleaning
-.PHONY: clean prog all memmap
+.PHONY: clean prog all memmap terminal
 clean:
 	rm -rf $(BUILD)
 	rm -f $(PRJ_HEX) $(PRJ_ELF) $(PRJ_LST)
@@ -79,3 +87,6 @@ clean:
 print_vars:
 	@echo $(INCLUDES)
 	@echo $(INCLUDE_DIRS)
+	
+terminal: prog
+	putty $(PUTTY_ARGS)

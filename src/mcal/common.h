@@ -12,6 +12,8 @@
 #define NULL ((void*)0)
 #define false (0 == 1)
 #define true (!false)
+#define ON true
+#define OFF false
 typedef uint8_t bool_t;
 
 typedef volatile uint8_t reg8_t;
@@ -53,7 +55,7 @@ typedef struct reg16_bits {
 #define BIT_LOW 0U
 
 inline void reg8_set_bits(volatile uint8_t * addr, uint8_t mask, uint8_t val) {
-	*addr = (*addr & (~mask)) | val;
+	*addr = (*addr & (~mask)) | (val & mask);
 }
 
 inline uint8_t reg8_get_bits(volatile uint8_t * addr, uint8_t mask) {
